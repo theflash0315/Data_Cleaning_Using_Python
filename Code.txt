@@ -1,0 +1,139 @@
+"""
+Secure Data Acquisition, ICA 1
+Analysis and viduslization of a dataset from the KDD Cup Data from 1999
+"""
+
+# Import the necessary packages or libraries
+
+import pandas as pd # for loading and creating data table or dataframe
+import numpy as np  #to perform a wide variety of mathematical operations on array
+
+"""
+ please make sure the console is your working directory
+ Otherwise, you may get an error
+"""
+## Load the data
+df = pd.read_excel('C:/Users/link2/Desktop/Monajir/SDA_ICA1/Cyber_Security_Breaches.xlsx', index_col=0) 
+
+""" Read column headers """
+# df.columns.ravel()
+
+# Read specific column, get top five datas in the specified column
+df['Name_of_Covered_Entity'][0:5]
+
+#Read a data from specific location 
+df.iloc[2,1]
+
+#See the data types of each columns (using the .dtypes property/)
+df.dtypes
+# Print Column data and convert them into the list of values
+df['Name_of_Covered_Entity'].tolist()
+
+"""
+Iterate through rows
+"""
+#for index, row in df.iterrows():
+#    print(index, row) 
+
+# Explore the data using head & tail function
+# First five rows or sample of the data using head.df()
+df.head()
+# First three of the rows or sample
+df.head(3)
+# Last five of the rows or sample
+df.tail()
+# Last three of the rows or sample
+df.tail(3) 
+
+# Descibing data
+df.describe()
+
+#Sorting
+# If you need to sort your data a cloumn's value wise, say ['Year']
+sorted_df=df.sort_values(by=['year'])
+
+#Renaming the column Summary as Conclusion
+data = df.rename(columns={"Summary": "Conclusion"}, inplace=True)
+
+## Cleaning the data ##
+
+# Cleaning the data with 'unknown' values
+# First replace the 'unknown' with nan
+df_u=sorted_df.mask(sorted_df.eq('unknown'))
+# droping or deleting samples or rows with nan values
+df_u1=df_u.dropna()
+  
+####Cleaning whole dataset in one go####
+
+data_columns = ['breach_start']
+data_columns = ['breach_end'] 
+data_columns = ['Individuals_Affected']
+data_columns = ['year']
+
+
+
+# Replace the non-numeric values from the column's by 'nan'
+num_df = (df.drop(data_columns, axis=1).join(df[data_columns].apply(pd.to_numeric, errors='coerce')))
+# Drop the 'nan' from the dataframe and get the clean data
+num_df_clean =num_df.dropna()
+
+# Sorting according year
+sorted_num_df=num_df_clean.sort_values(by=['year'])
+
+# get the average records
+sorted_num_df["Individuals_Affected"].mean()
+
+# Get descriptive statistics of the 'Individuals_Affected' column's data
+sorted_num_df['Individuals_Affected'].describe()
+
+
+# Draw a graphs for year vs. Individuals_Affected
+# Import the necessary package for graphs
+import matplotlib.pyplot as plt 
+
+# define x & y for plotting
+x= sorted_num_df['year']
+y = sorted_num_df['Individuals_Affected']
+
+# define fonts
+font1 = {'family':'serif','color':'hotpink','size':20}
+font2 = {'family':'serif','color':'red','size':15}
+font3 = {'family':'serif','color':'yellow','size':15}
+
+#Plot bar chart
+plt.title('Cyber Security Breaches', fontdict = font1, loc= 'left')
+bars = plt.bar(x, y, color='blue', width = 0.5)
+plt.xticks([2009, 2010, 2011, 2012, 2013, 2014])
+
+plt.xlabel('year', fontdict = font2)
+plt.ylabel('Individuals_Affected', fontdict = font2)
+
+#Adding patterns to plot
+bars[0].set_hatch('+')
+bars[1].set_hatch('o')
+
+plt.show()
+
+#Plot line graph
+plt.plot(x, y, label='Year vs Individuals_Affected', color='red',
+         linewidth=3, linestyle='--',
+         marker = '*', ms = 10, mfc = 'b')
+plt.title('Cyber Security Breaches', fontdict = font1)
+plt.xlabel('year', fontdict = font2)
+plt.ylabel('Individuals_Affected', fontdict = font2)
+plt.xticks([2009, 2010, 2011, 2012, 2013, 2014])
+plt.yticks([2000, 3000, 4000, 5000])
+plt.grid(True)
+plt.show()
+
+#Plot scatter graph
+sizes = np.random.uniform(15, 80, len(x))
+colors = np.random.uniform(15, 80, len(x))
+fig, ax = plt.subplots()
+plt.title('Cyber Security Breaches', fontdict = font1)
+plt.xlabel('year', fontdict = font3)
+plt.ylabel('Individuals_Affected', fontdict = font3)
+ax.scatter(x, y, s=sizes, c=colors, vmin=0, vmax=100)
+fig.patch.set_facecolor('m')
+ax.set(facecolor = "tomato")
+plt.show()
